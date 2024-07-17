@@ -1,0 +1,161 @@
+#!/bin/bash
+
+# Função para verificar o shell atual e determinar o arquivo de configuração
+get_shell_config_file() {
+  case "$SHELL" in
+    */bash) echo "$HOME/.bash_profile" ;;
+    */zsh)  echo "$HOME/.zprofile" ;;
+    *) echo "Shell não suportado. Este script funciona com Bash ou Zsh." && exit 1 ;;
+  esac
+}
+
+# Função para exibir mensagens e temporizadores
+show_message() {
+  local message=$1
+  sleep 1
+  echo "$message"
+}
+
+# Função para solicitar a senha de administrador
+get_admin_password() {
+  if [ -z "$PASSWORD" ]; then
+    PASSWORD=$(osascript -e 'Tell application "System Events" to display dialog "Por favor, insira a senha de administrador dessa máquina:" default answer "" with hidden answer buttons {"OK"} default button 1 with icon caution' -e 'text returned of result')
+  fi
+}
+
+# Função para verificar se sudo está configurado
+check_sudo() {
+  sudo -vn &>/dev/null
+}
+
+# Função para instalar o Homebrew
+install_homebrew() {
+  local brew_path
+  for path in /usr/local/bin/brew /opt/homebrew/bin/brew; do
+    if [ -x "$path" ]; then
+      HOMEBREW_PREFIX="${path%/bin/brew}"
+      show_message "Homebrew já está instalado em $HOMEBREW_PREFIX."
+      FLAG_HB="TRUE"
+
+      BREW_PATH=$path
+      return
+    fi
+  done
+
+  show_message "Homebrew não encontrado."
+  show_message "Aguarde, instalação do Homebrew em andamento..."
+  show_message "Isso pode demorar um pouco (+5 min)..."
+
+  local temp_file=$(mktemp)
+  curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh -o "$temp_file" > /dev/null 2>&1 
+
+  /usr/bin/expect <<EOF
+  set timeout -1
+spawn /bin/bash "$temp_file"
+expect {
+  "Password:" { send "$PASSWORD\r"; exp_continue }
+  "*abort:" { send "\r"; exp_continue }
+  "*"{ exit 1 } 
+}
+EOF
+  rm "$temp_file"
+
+  config_file=$(get_shell_config_file)
+  touch "$config_file"
+
+  for path in /usr/local/bin/brew /opt/homebrew/bin/brew; do
+    if [ -x "$path" ]; then
+      HOMEBREW_PREFIX="${path%/bin/brew}"
+      show_message "Homebrew instalado com sucesso em $HOMEBREW_PREFIX."
+      FLAG_HB="TRUE"
+
+      BREW_PATH=$path
+      return
+    fi
+  done
+
+  show_message "Reinicie esse programa."
+  exit 1
+}
+
+# Função para instalar o OpenConnect
+install_openconnect() {
+    for path in /usr/local/bin/openconnect /opt/homebrew/bin/openconnect; do
+      if [ -x "$path" ]; then
+        OPENCONNECT_PREFIX="${path%/bin/openconnect}"
+        show_message "OpenConnect já está instalado."
+        FLAG_OC="TRUE"
+
+        OPENCONNECT_PATH=$path
+        return
+      fi
+    done
+  
+    show_message "OpenConnect não encontrado."
+    show_message "Aguarde, instalação do OpenConnect em andamento..."
+    show_message "Isso pode demorar um pouco (+5 min)..."
+
+    $BREW_PATH install openconnect
+
+    for path in /usr/local/bin/openconnect /opt/homebrew/bin/openconnect; do
+      if [ -x "$path" ]; then
+        OPENCONNECT_PREFIX="${path%/bin/openconnect}"
+        show_message "OpenConnect já está instalado."
+        FLAG_OC="TRUE"
+
+        OPENCONNECT_PATH=$path
+        return
+      fi
+    done
+}
+
+# Função para conectar à VPN
+connect_vpn() {
+  local user_vpn=$1
+  local password_vpn=$2
+
+  echo "$PASSWORD" | sudo -S true
+  echo "$password_vpn" | sudo $OPENCONNECT_PATH -u "$user_vpn" --passwd-on-stdin vpn.ufabc.edu.br
+}
+
+# Inicializando variáveis
+FLAG_HB="FALSE"
+FLAG_OC="FALSE"
+FLAG_PASSWD="FALSE"
+
+# Verificando dependências
+if ! command -v osascript &>/dev/null; then
+  echo "osascript não está instalado. Por favor, instale o AppleScript."
+  exit 1
+fi
+
+echo ""
+show_message "Para iniciar a execução do vpnUFABC para MacOS, insira a senha de administrador."
+
+echo ""
+get_admin_password
+
+echo ""
+show_message "Verificando a instalação do Homebrew..."
+install_homebrew
+
+echo ""
+show_message "Verificando a instalação do OpenConnect..."
+install_openconnect
+
+echo ""
+
+if [ "$FLAG_HB" = "TRUE" ] && [ "$FLAG_OC" = "TRUE" ]; then
+  if [ "$FLAG_PASSWD" = "FALSE" ]; then
+    get_admin_password
+    FLAG_PASSWD="TRUE"
+  fi
+
+  USER_VPN=$(osascript -e 'Tell application "System Events" to display dialog "Por favor, insira seu usuário da VPN:" default answer "" buttons {"OK"} default button 1' -e 'text returned of result')
+  show_message "Usuário: $USER_VPN"
+  PASSWORD_VPN=$(osascript -e 'Tell application "System Events" to display dialog "Por favor, insira sua senha da VPN:" default answer "" with hidden answer buttons {"OK"} default button 1' -e 'text returned of result')
+
+  connect_vpn "$USER_VPN" "$PASSWORD_VPN"
+else
+  show_message "Execute esse programa novamente para acessar a VPN."
+fi
