@@ -55,11 +55,8 @@ Se você preferir trabalhar diretamente com o script, o código-fonte está disp
 
 ## Autor
 
-O **vpnUFABC** foi desenvolvido por [Seu Nome]. Este projeto tem como objetivo facilitar o acesso à VPN da UFABC, proporcionando uma solução simples e prática para usuários do macOS.
+O **vpnUFABC** foi desenvolvido por Giulio Suzumura. Este projeto tem como objetivo facilitar o acesso à VPN da UFABC, proporcionando uma solução simples e prática para usuários do macOS.
 
-### Contato
-
-Você pode entrar em contato comigo através do meu e-mail: [seuemail@exemplo.com] ou pelo meu perfil no GitHub: [seuusuario](https://github.com/seuusuario).
 
 ## Licença
 
