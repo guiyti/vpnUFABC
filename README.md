@@ -4,7 +4,7 @@ O **vpnUFABC** é um aplicativo que automatiza a conexão à VPN da UFABC no mac
 
 ## Descrição
 
-O pacote `vpnUFABC.dmg` contém um aplicativo que simplifica o processo de conexão à VPN da UFABC no macOS. Para acessar a VPN é necessário ter dois componentes essenciais: o **OpenConnect**, que é a ferramenta utilizada para a conexão, e o **Homebrew**, que é o gerenciador de pacotes responsável pela instalação do OpenConnect.
+O aplicativo `vpnUFABC.app` simplifica o processo de conexão à VPN da UFABC no macOS. Para acessar a VPN é necessário ter dois componentes essenciais: o **OpenConnect**, que é a ferramenta utilizada para a conexão, e o **Homebrew**, que é o gerenciador de pacotes responsável pela instalação e execução do OpenConnect.
 
 O aplicativo `vpnUFABC` realiza automaticamente a verificação da presença do Homebrew e do OpenConnect no sistema. Caso algum desses componentes não esteja instalado, o pacote cuida da instalação de forma prática e eficiente, permitindo que o usuário se conecte à VPN sem complicações adicionais.
 
@@ -22,20 +22,20 @@ O **Homebrew** é um gerenciador de pacotes que facilita a instalação e atuali
 
 ## Uso
 
-1. **Baixe o DMG:**
-   - Faça o download do arquivo `vpnUFABC.dmg` do repositório.
+1. **Baixar o Repositório:**
+   - Faça o download do repositório como um arquivo ZIP em **Code > Download ZIP**.
 
-2. **Monte o DMG:**
-   - Dê um duplo clique no arquivo `vpnUFABC.dmg` para montá-lo.
-
-3. **Instale o aplicativo:**
+2. **Instalar o Aplicativo:**
+   - Descompacte o arquivo ZIP.
    - Arraste o `vpnUFABC.app` para a pasta Aplicativos.
 
-4. **Execute o aplicativo:**
-   - Dê um duplo clique no `vpnUFABC.app` para iniciar o processo.
+3. **Executar o Aplicativo:**
+   - Dê um duplo clique no `vpnUFABC.app` para iniciar o aplicativo.
+   - Se uma janela de segurança informar que o aplicativo foi baixado da internet e que o macOS não pode verificá-lo, abra **Ajustes > Segurança e Privacidade** e clique em **Abrir Mesmo Assim** para permitir a execução. Para mais detalhes, consulte [este link](https://macmagazine.com.br/post/2021/09/20/como-instalar-apps-de-desenvolvedores-nao-identificados-no-mac/), ou então visualize a sequência de imagens da pasta `readme_imgs`.
 
-5. **Siga as instruções:**
-   - O aplicativo solicitará sua senha de administrador para garantir que ele tenha as permissões necessárias para realizar as operações de instalação, configuração e execução. Após essa etapa, você será solicitado a inserir suas credenciais da VPN. 
+4. **Seguir as Instruções:**
+   - O aplicativo solicitará sua senha de administrador para garantir as permissões necessárias para a instalação, configuração e execução.
+   - Em seguida, insira suas credenciais da VPN conforme solicitado.
 
 ## Funcionalidades
 
